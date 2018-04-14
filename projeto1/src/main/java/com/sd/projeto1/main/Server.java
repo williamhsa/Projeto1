@@ -85,10 +85,13 @@ public class Server {
 	}
 	
 	// to stop the server
-	protected void stop() {
+	protected void stop() throws IOException {
 		keepGoing = false;
+                
+                Map.Entry<String, Integer> conexao = LeitorArquivo.lerArquivo(Utilidades.CAMINHO_CONEXAO);
+                
 		try {
-			new Socket("localhost", port);
+			new Socket(conexao.getKey(), conexao.getValue());
 		}
 		catch(Exception e) {
 		}
