@@ -12,16 +12,15 @@ import java.util.*;
 //The Client that can be run as a console
 public class Client  {
 	
-	// notification
+	// notificação
 	private String notif = " *** ";
 
-	// for I/O
-	private ObjectInputStream sInput;		// to read from the socket
-	private ObjectOutputStream sOutput;		// to write on the socket
-	private Socket socket;					// socket object
+	private ObjectInputStream sInput;	 // ler do socket
+	private ObjectOutputStream sOutput;      // escrever no socket
+	private Socket socket;
 	
-	private String server, username;	// server and username
-	private int port;					//port
+	private String server, username;	// servidor e usuário
+	private int port;		        //porta
 
 	public String getUsername() {
 		return username;
@@ -31,13 +30,7 @@ public class Client  {
 		this.username = username;
 	}
 
-	/*
-	 *  Constructor to set below things
-	 *  server: the server address
-	 *  port: the port number
-	 *  username: the username
-	 */
-	
+        
 	Client(String server, int port, String username) {
 		this.server = server;
 		this.port = port;

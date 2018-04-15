@@ -5,7 +5,8 @@ public enum TipoOperacao {
     
     CREATE(1),  
     UPDATE(2),
-    DELETE(3);
+    DELETE(3),
+    SEARCH(4);
     
   private final int value;    
 

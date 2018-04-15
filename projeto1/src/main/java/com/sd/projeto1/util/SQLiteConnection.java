@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class SQLiteConnection {
     
-    public static void connect() {
+    public static Connection connect() {
         Connection conn = null;
         try {
            
@@ -15,21 +15,17 @@ public class SQLiteConnection {
            
             conn = DriverManager.getConnection(url);
             
-            System.out.println("Conexão com SQLITE feita com sucesso");
+            return conn;
+           
             
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
+        } catch (SQLException ex) {
+			System.out.println("Erro. " + ex.getMessage());
+			ex.printStackTrace();
+	} 
+        
+        return null;
     }
-    
+        
     public static void close(Connection con) {
         try {
             con.close();

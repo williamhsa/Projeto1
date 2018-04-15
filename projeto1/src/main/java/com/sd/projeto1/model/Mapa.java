@@ -9,6 +9,7 @@ public class Mapa {
     private int chave;
     private String texto;
     private TipoOperacao tipoOperacao;
+    private int tipoOperacaoId;
     private Date data;
     
     public int getChave() {
@@ -30,6 +31,13 @@ public class Mapa {
     }
     public void setTipoOperacao(TipoOperacao tipoOperacao) {
         this.tipoOperacao = tipoOperacao;
+    }
+    
+    public int getTipoOperacaoId() {
+        return tipoOperacaoId;
+    }
+    public void setTipoOperacaoId(int tipoOperacaoId) {
+        this.tipoOperacaoId = tipoOperacaoId;
     }
 
     public Date getData() {
