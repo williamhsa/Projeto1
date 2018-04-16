@@ -1,6 +1,5 @@
 package com.sd.projeto1.model;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 

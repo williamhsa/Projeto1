@@ -1,1 +1,1 @@
-CREATE TABLE `mapa` (	`chave`	INTEGER NOT NULL,	`texto`	TEXT,	`tipo`	TEXT,	PRIMARY KEY(chave))
+CREATE TABLE mapa (    chave INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,    tipo INTEGER    NOT NULL,    texto TEXT    NOT NULL,    data  DATE    NOT NULL);

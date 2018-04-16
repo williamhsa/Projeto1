@@ -7,7 +7,11 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Date;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MapaDao implements Serializable{
@@ -21,8 +25,8 @@ public class MapaDao implements Serializable{
         try {
                 con = SQLiteConnection.connect();
 
-                ps = con.prepareStatement("select chave, texto, tipooperacao, data "
-                                                        + "from mapa where id = ?");
+                ps = con.prepareStatement("select chave, texto, tipo, data "
+                                                        + "from mapa where chave = ?");
                 ps.setInt(1, id);
 
                 ResultSet rs = ps.executeQuery();
@@ -32,18 +36,116 @@ public class MapaDao implements Serializable{
                 while(rs.next()){
                     mapa.setChave(rs.getInt("chave"));
                     mapa.setTexto(rs.getString("texto"));
-                    mapa.setTipoOperacaoId(rs.getInt("tipooperacao"));             
-                    mapa.setData(rs.getDate("data"));
+                    mapa.setTipoOperacaoId(rs.getInt("tipo"));             
+                    mapa.setData(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rs.getString("data")));
                 }
                 rs.close();
                 con.close();
 
                 return mapa;
 
-        } catch (Exception e) {
+        } catch (SQLException | ParseException e) {
                 throw new Exception("Erro ao buscar Mapa. "+e.getMessage());
-        }
-		
+        }	
     }
+    
+    public int salvar(Mapa mapa) throws Exception {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            con = SQLiteConnection.connect();
+
+            ps = con.prepareStatement(
+                            "insert into mapa(texto, tipo, data) "
+                                            + "VALUES (?, ?, datetime('now', 'localtime'))");
+            ps.setString(1, mapa.getTexto());
+            ps.setInt(2, mapa.getTipoOperacaoId());
+
+            return ps.executeUpdate();
+          
+        } catch (SQLException e) {
+                throw new Exception("Erro ao inserir mapa. " + e.getMessage());
+        }finally{
+             con.close();
+        }
+
+    }
+    
+    public int editar(Mapa mapa) throws Exception {
+        Connection con = null;
+        PreparedStatement ps = null;
+        
+        try {
+            
+            if(mapa.getChave() <=0)
+                return 0;
+            
+                con = SQLiteConnection.connect();
+                ps = con.prepareStatement("update mapa set texto = ? where chave = ?");
+                ps.setString(1, mapa.getTexto());
+                ps.setInt(2, mapa.getChave());
+
+                return ps.executeUpdate();
+
+        } catch (SQLException e) {
+                throw new Exception("Erro ao atualizar mapa. " + e.getMessage());
+        }finally{
+             con.close();
+        }
+    }
+    
+    public int excluir(int id) throws Exception {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+                con = SQLiteConnection.connect();
+                ps = con.prepareStatement("delete from mapa where chave = ?");
+                ps.setInt(1, id);
+
+                return ps.executeUpdate();
+          
+        } catch (SQLException e) {
+                throw new Exception("Erro ao excluir mapa. " + e.getMessage());
+        }finally{
+             con.close();
+        }
+
+    }
+
+	public List<Mapa> buscarTodos() throws Exception {
+            Connection con = null;
+
+            try {
+                    con = SQLiteConnection.connect();
+                    PreparedStatement pstmt = con
+                                    .prepareStatement("select chave, texto, tipo, data "
+                                                    + "from mapa order by data");
+
+                    ResultSet rs = pstmt.executeQuery();
+
+                    List<Mapa> mapas = new ArrayList<Mapa>();
+
+                    while (rs.next()) {
+                            Mapa mapa = new Mapa();
+
+                            mapa.setChave(rs.getInt("chave"));
+                            mapa.setTexto(rs.getString("texto"));
+                            mapa.setTipoOperacaoId(rs.getInt("tipo"));             
+                            mapa.setData(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rs.getString("data")));
+
+                            mapas.add(mapa);
+                    }
+
+                    con.close();
+
+                    return mapas;
+
+            } catch (SQLException | ParseException e) {
+                    throw new Exception("Erro ao buscar lista de mapas. " + e.getMessage());
+            }
+
+	}
     
 }
