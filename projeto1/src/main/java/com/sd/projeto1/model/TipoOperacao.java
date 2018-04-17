@@ -1,20 +1,12 @@
 package com.sd.projeto1.model;
 
 
-public enum TipoOperacao {
+public abstract class TipoOperacao {
     
-    CREATE(1),  
-    UPDATE(2),
-    DELETE(3),
-    SEARCH(4);
-    
-  private final int value;    
-
-  private TipoOperacao(int value) {
-    this.value = value;
-  }
-
-  public int getValue() {
-    return value;
-  }
+    public static final int CREATE=1;
+    public static final int UPDATE=2;
+    public static final int DELETE=3;
+    public static final int SEARCH=4;
+    public static final int LOGOUT=5;
+       
 }

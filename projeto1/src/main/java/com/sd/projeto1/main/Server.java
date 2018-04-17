@@ -275,24 +275,24 @@ public class Server {
 				switch(cm.getType()) {
 
 				case ChatMessage.MESSAGE:
-					boolean confirmation =  broadcast(username + ": " + message);
-					if(confirmation==false){
-						String msg = notif + "Não existem usuários." + notif;
-						writeMsg(msg);
-					}
+//					boolean confirmation =  broadcast(username + ": " + message);
+//					if(confirmation==false){
+//						String msg = notif + "Não existem usuários." + notif;
+//						writeMsg(msg);
+//					}
 					break;
 				case ChatMessage.LOGOUT:
 					display(username + " desconectado.");
 					keepGoing = false;
 					break;
-				case ChatMessage.WHOISIN:
-					writeMsg("Lista de usuários conectados " + sdf.format(new Date()) + "\n");
-					// send list of active clients
-					for(int i = 0; i < al.size(); ++i) {
-						ClientThread ct = al.get(i);
-						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
-					}
-					break;
+//				case ChatMessage.WHOISIN:
+//					writeMsg("Lista de usuários conectados " + sdf.format(new Date()) + "\n");
+//					// send list of active clients
+//					for(int i = 0; i < al.size(); ++i) {
+//						ClientThread ct = al.get(i);
+//						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
+//					}
+//					break;
 				}
 			}
 			// if out of the loop then disconnected and remove from client list

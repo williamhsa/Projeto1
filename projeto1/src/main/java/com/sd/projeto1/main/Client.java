@@ -1,12 +1,15 @@
 package com.sd.projeto1.main;
 
 
+import com.sd.projeto1.dao.MapaDao;
+import com.sd.projeto1.model.Mapa;
 import com.sd.projeto1.util.ChatMessage;
 import com.sd.projeto1.util.LeitorArquivo;
 import com.sd.projeto1.util.Utilidades;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 
 //The Client that can be run as a console
@@ -133,9 +136,10 @@ public class Client  {
 	 * If the serverAddress is not specified "localHost" is used
 	 * If the username is not specified "Anonymous" is used
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, Exception {
 		// default values if not entered
-		
+		MapaDao mapa = new MapaDao(); 
+                
                 Map.Entry<String, Integer> conexao = LeitorArquivo.lerArquivo(Utilidades.CAMINHO_CONEXAO);
                 
 		String userName = "Anonymous";
@@ -174,6 +178,17 @@ public class Client  {
 			// regular text message
 			else {
 				client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
+                                
+                                if(Utilidades.validaInstrucao(msg)){
+                                   Entry<Integer, String> retorno = Utilidades.retornaInstrucao(msg);
+                                   Mapa mapa1 = new Mapa();
+                                   mapa1.setTipoOperacaoId(retorno.getKey());
+                                   mapa1.setTexto(retorno.getValue());
+                                   mapa.salvar(mapa1);
+                                }else{
+                                    System.out.println("Instrução Incorreta. Digite novamente!");
+                                }
+                                
 			}
 		}
 		// close resource
