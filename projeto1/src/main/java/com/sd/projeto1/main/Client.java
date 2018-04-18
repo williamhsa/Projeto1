@@ -9,51 +9,62 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Client {
+public class Client implements Runnable{
 
-    private String server;	// servidor UDP
+    private InetAddress enderecoIP;
     private int port; //porta UDP
-
+    private BufferedReader tecladoUsuario;
+    private DatagramSocket socketCliente;
     
-
-    Client(String server, int port) {
-        this.server = server;
-        this.port = port;
+    private byte[] outData;
+    private byte[] inData;
+    
+    PropertyManagement pm = new PropertyManagement();
+    
+    Client() throws SocketException, UnknownHostException{
+        this.enderecoIP = InetAddress.getByName(pm.getAddress());
+        this.port = pm.getPort();
+        socketCliente = new DatagramSocket();
+        tecladoUsuario = new BufferedReader(new InputStreamReader(System.in));
     }
+    
+    
 
     public static void main(String[] args) throws IOException, Exception {
-
-        PropertyManagement pm = new PropertyManagement();
-
-        Scanner in = new Scanner(System.in);
-        
-        
-        Client client1 = new Client(pm.getAddress(), pm.getPort());
-        //System.out.println(pm.getAddress());
-        //System.out.println(pm.getPort());
-        
-        try{
-            // criação de sockets UDP - Datagramas
-            DatagramSocket clientSocket = new DatagramSocket();
-            
-        }catch()
+        new Thread(new Client()).start();
+      
+    }
     
-        
-        
+    public void run() {
+	    
+            System.out.println("Cliente Iniciado, esperando por mensagem:");
+		
+            while(true){
+            try {
+                    inData = new byte[1400];
+                    outData = new byte[1400];
+                   
+                    System.out.print("> ");
+                    String sentence = tecladoUsuario.readLine();
+                    outData = sentence.getBytes();
+
+                    DatagramPacket out = new DatagramPacket(outData, outData.length, this.enderecoIP, this.port);
+                    socketCliente.send(out);
+
+                    DatagramPacket in = new DatagramPacket(inData, inData.length);
+                    socketCliente.receive(in);
+
+                    String modifiedSentence = new String(in.getData());
+                    System.out.println("Servidor >" + modifiedSentence);
+
+            } catch (IOException e) {
+                System.out.println("Excessão causada: " + e.getLocalizedMessage());
+            }
+        }
     }
-    public String getServer() {
-        return server;
+    
+    private void shutdown(){
+		socketCliente.close();
     }
 
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
 }
