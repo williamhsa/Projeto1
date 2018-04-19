@@ -25,40 +25,42 @@ public class Server {
 
     private final PropertyManagement pm = new PropertyManagement();
 
-    public static void main(String[] args) throws SocketException {
+    public static void main(String[] args) throws SocketException, InterruptedException {
         System.out.println("Servidor Iniciado...");
-
+        socketServidor = new DatagramSocket();
         //Thread para receber datagran e colocar na fila
         Thread receiveThread = new Thread(new Runnable() {
-            
+
             @Override
             public void run() {
                 while (true) {
                     try {
                         DatagramPacket pacoteRecebido = pacoteRecebido();
-                        
 
-                        String text = new String(pacoteRecebido.getData());
-                        sendData = text.toUpperCase().getBytes();
-                        System.out.println("Mensagem Recebida: " + text);
+                        String texto = new String(receiveData,0,pacoteRecebido.getLength());
+                        sendData = texto.toUpperCase().getBytes();
+                        System.out.println("Mensagem Recebida: " + texto);
 
                         // Pegando ip e porta do cliente que enviou o zdatagram
                         IPAddress = pacoteRecebido.getAddress();
                         port = pacoteRecebido.getPort();
+                        
+                        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                        socketServidor.send(envioPacote);
 
-                       // Thread.sleep(300);
+                        // Thread.sleep(300);
                     } catch (IOException e) {
                         System.out.println("Excessão causada: " + e.getLocalizedMessage());
-                   // } catch (InterruptedException ex) {
-                      //  break;
-                   }
+                        // } catch (InterruptedException ex) {
+                        //  break;
+                    }
 
                 }
             }
 
         });
 
-        //Thread que vai consumir do fila e responder para cliente;
+       /* //Thread que vai consumir do fila e responder para cliente;
         Thread consumeThread = new Thread(new Runnable() {
 
             @Override
@@ -67,30 +69,32 @@ public class Server {
 
                     try {
 
-                        DatagramPacket sendPacket = new DatagramPacket(receiveData, receiveData.length, IPAddress, port);
-                        socketServidor.send(sendPacket);
+                        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                        socketServidor.send(envioPacote);
                         //Thread.sleep(800);
-                    //} catch (InterruptedException ex) {
-                      //  break;
+                        //} catch (InterruptedException ex) {
+                        //  break;
                     } catch (IOException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
             }
-        });
+        });*/
         receiveThread.start();
-        consumeThread.start();
+     //   consumeThread.start();
+        receiveThread.join();
+      //  consumeThread.join();
 
     }
+
     // Metodo para receber Datagrams
-    static DatagramPacket pacoteRecebido() throws IOException{
+    static DatagramPacket pacoteRecebido() throws IOException {
         // recebendo datagrama do cliente
-                        DatagramPacket pacoteRecebido = new DatagramPacket(receiveData, receiveData.length);
-                        socketServidor.receive(pacoteRecebido);
-                        return pacoteRecebido;
+        DatagramPacket pacoteRecebido = new DatagramPacket(receiveData, receiveData.length);
+        socketServidor.receive(pacoteRecebido);
+        return pacoteRecebido;
     }
-    
-    static void enviarPacote()
 
+    // static void enviarPacote()
 }

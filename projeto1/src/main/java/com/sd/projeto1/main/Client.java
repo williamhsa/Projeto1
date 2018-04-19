@@ -45,8 +45,8 @@ public class Client {
                         sendData = sentence.getBytes(); // Pegando tamanho da String
 
                         //Enviando o pacote de datagrama para o servidor
-                        DatagramPacket outDatagram = new DatagramPacket(sendData, sendData.length, enderecoIP, port);
-                        socketCliente.send(outDatagram);
+                        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, enderecoIP, port);
+                        socketCliente.send(envioPacote);
 
                     } catch (IOException e) {
                         System.out.println("Excessão causada: " + e.getLocalizedMessage());
@@ -65,12 +65,12 @@ public class Client {
 
                     try {
                         //recebendo o pacote datagrama do servidor
-                        DatagramPacket inDatagram = new DatagramPacket(receiveData, receiveData.length);
-                        socketCliente.receive(inDatagram);
+                        DatagramPacket pacoteRecebido = new DatagramPacket(receiveData, receiveData.length);
+                        socketCliente.receive(pacoteRecebido);
 
                         //imprimindo mensagem recebida do servidor;
-                        String modifiedSentence = new String(inDatagram.getData());
-                        System.out.println("Servidor >" + modifiedSentence);
+                        String textoModificado = new String(pacoteRecebido.getData());
+                        System.out.println("Servidor >" + textoModificado );
 
                         //Thread.sleep(800);
                    // } catch (InterruptedException ex) {
@@ -84,7 +84,9 @@ public class Client {
         });
 
         commandThread.start();
+        commandThread.join();
         resultThread.start();
+        resultThread.join();
         // Close o socket do cliente
 
     }
