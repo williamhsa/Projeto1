@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 public class Server {
 
     private static DatagramSocket socketServidor;
-    private static InetAddress IPAddress;
-    private static int port;
+    private static InetAddress clientIPAddress;
+    private static int clientport;
 
     private static byte[] receiveData = new byte[1400];
     private static byte[] sendData = new byte[1400];
@@ -39,10 +39,11 @@ public class Server {
                         comandosRecebidos.offer(pacoteRecebido);
 
                         String texto = new String(receiveData, 0, pacoteRecebido.getLength());
+
                         sendData = texto.toUpperCase().getBytes();
                         System.out.println("Mensagem Recebida: " + texto);
 
-                        enviarPacote(pacoteRecebido, texto);
+                        enviarPacote(pacoteRecebido,texto);
 
                         // Thread.sleep(300);
                     } catch (IOException e) {
@@ -89,11 +90,11 @@ public class Server {
 
     static void enviarPacote(DatagramPacket pacoteRecebido, String texto) throws IOException {
         // Pegando ip e porta do cliente que enviou o zdatagram
-        IPAddress = pacoteRecebido.getAddress();
-        port = pacoteRecebido.getPort();
+        clientIPAddress = pacoteRecebido.getAddress();
+        clientport = pacoteRecebido.getPort();
 
-        sendData = texto.getBytes();
-        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+         sendData = texto.getBytes();
+        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, clientIPAddress, clientport);
         socketServidor.send(envioPacote);
 
     }
@@ -101,6 +102,27 @@ public class Server {
     // Aqui será realizado o CRUD
     static void processamentoComandos() {
         DatagramPacket pacoteRebido = comandosRecebidos.poll();
+        String comando = new String(pacoteRebido.getData(), 0, pacoteRebido.getLength());
+        DatagramPacket processoPacket;
+
+        switch (comando) {
+            case "insert":
+                enviarPacote(processoPacket,"Inserido!");
+                break;
+            case "update":
+               enviarPacote(processoPacket,"Atualizado!");
+                    break;
+            case "select":
+                String dados = select(bigInteger);
+               enviarPacote(processoPacket,msg);
+                    break;
+            case "delete":
+                enviarPacote(processoPacket,"Removido!");
+                break;
+            default:
+                System.out.println("Comando invalido!");
+                enviarPacote(processoPacket, "Comando invalido!");
+        }
 
     }
 }

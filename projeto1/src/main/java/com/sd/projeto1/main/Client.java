@@ -17,7 +17,7 @@ public class Client {
     private static InetAddress enderecoIP;
     private static int port; //porta UDP
     private static BufferedReader tecladoUsuario;
-    private static DatagramSocket socketCliente;
+    private static DatagramSocket socketCliente;   //criação de sockets udp
 
     private static byte[] sendData = new byte[1400];
     private static byte[] receiveData = new byte[1400];
