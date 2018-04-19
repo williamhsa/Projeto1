@@ -56,7 +56,7 @@ public class Server {
 
         });
 
-        /*//Thread que vai consumir do fila e responder para cliente;
+        //Thread que vai consumir do fila e responder para cliente;
         Thread consumeThread = new Thread(new Runnable() {
 
             @Override
@@ -64,18 +64,18 @@ public class Server {
                 while (true) {
 
                     processamentoComandos();
-                    
+
                     //Thread.sleep(800);
                     //} catch (InterruptedException ex) {
                     //  break;
                 }
 
             }
-        });*/
+        });
         receiveThread.start();
         receiveThread.join();
-        //consumeThread.start();
-       // consumeThread.join();
+        consumeThread.start();
+        consumeThread.join();
 
     }
 
@@ -97,8 +97,10 @@ public class Server {
         socketServidor.send(envioPacote);
 
     }
-    
-    static void processamentoComandos(){
-        
+
+    // Aqui será realizado o CRUD
+    static void processamentoComandos() {
+        DatagramPacket pacoteRebido = comandosRecebidos.poll();
+
     }
 }

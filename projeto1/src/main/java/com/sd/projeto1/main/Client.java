@@ -70,11 +70,11 @@ public class Client {
 
                         //imprimindo mensagem recebida do servidor;
                         String textoModificado = new String(pacoteRecebido.getData());
-                        System.out.println("Servidor >" + textoModificado );
+                        System.out.println("Servidor >" + textoModificado);
 
                         //Thread.sleep(800);
-                   // } catch (InterruptedException ex) {
-                       // break;
+                        // } catch (InterruptedException ex) {
+                        // break;
                     } catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
