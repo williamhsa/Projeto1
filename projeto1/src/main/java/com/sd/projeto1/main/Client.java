@@ -12,25 +12,24 @@ import java.util.logging.Logger;
 
 public class Client {
 
+    private static PropertyManagement pm = new PropertyManagement();
+
     private static InetAddress enderecoIP;
     private static int port; //porta UDP
     private static BufferedReader tecladoUsuario;
     private static DatagramSocket socketCliente;
 
-    private static byte[] sendData;
-    private static byte[] receiveData;
+    private static byte[] sendData = new byte[1400];
+    private static byte[] receiveData = new byte[1400];
 
-    private final PropertyManagement pm = new PropertyManagement();
+    public static void main(String[] args) throws IOException, Exception {
 
-    Client() throws SocketException, UnknownHostException {
         enderecoIP = InetAddress.getByName(pm.getAddress());
         port = pm.getPort();
         socketCliente = new DatagramSocket();
         tecladoUsuario = new BufferedReader(new InputStreamReader(System.in));
-    }
 
-    public static void main(String[] args) throws IOException, Exception {
-        //Thread para receber os comandos
+//Thread para receber os comandos
         Thread commandThread = new Thread(new Runnable() {
 
             @Override
@@ -39,10 +38,8 @@ public class Client {
                 System.out.println("Cliente Iniciado, esperando por mensagem:");
 
                 while (true) {
-                    try {
-                        receiveData = new byte[1400];
-                        sendData = new byte[1400];
 
+                    try {
                         System.out.print("> ");
                         String sentence = tecladoUsuario.readLine();
                         sendData = sentence.getBytes(); // Pegando tamanho da String
@@ -75,9 +72,9 @@ public class Client {
                         String modifiedSentence = new String(inDatagram.getData());
                         System.out.println("Servidor >" + modifiedSentence);
 
-                        Thread.sleep(800);
-                    } catch (InterruptedException ex) {
-                        break;
+                        //Thread.sleep(800);
+                   // } catch (InterruptedException ex) {
+                       // break;
                     } catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -85,12 +82,10 @@ public class Client {
 
             }
         });
-        
-        
+
         commandThread.start();
         resultThread.start();
         // Close o socket do cliente
-        shutdown();
 
     }
 
