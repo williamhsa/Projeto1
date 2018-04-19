@@ -6,21 +6,22 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Server implements Runnable {
+public class Server {
 
-    private DatagramSocket socketServidor;
+    static DatagramSocket socketServidor;
 
-    private byte[] receiveData;
-    private byte[] sendData;
+    static byte[] receiveData;
+    static byte[] sendData;
 
     PropertyManagement pm = new PropertyManagement();
 
     public static void main(String[] args) throws SocketException {
         System.out.println("Servidor Iniciado...");
-        new Thread(new Server()).start();
+        new Thread(new ServerSendClient()).start();
     }
-
-    @Override
+    
+    static class ServerSendClient implements Runnable{
+        @Override
     public void run() {
         while (true) {
             try {
@@ -47,5 +48,9 @@ public class Server implements Runnable {
 
         }
     }
+        
+    }
+
+    
 
 }

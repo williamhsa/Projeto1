@@ -10,19 +10,19 @@ import java.util.Map.Entry;
 
 public class Client implements Runnable {
 
-    private InetAddress enderecoIP;
-    private int port; //porta UDP
-    private BufferedReader tecladoUsuario;
-    private DatagramSocket socketCliente;
+   static InetAddress enderecoIP;
+    static int port; //porta UDP
+    static  BufferedReader tecladoUsuario;
+    static  DatagramSocket socketCliente;
 
-    private byte[] sendData;
-    private byte[] receiveData;
+    static  byte[] sendData;
+    static  byte[] receiveData;
 
     PropertyManagement pm = new PropertyManagement();
 
     Client() throws SocketException, UnknownHostException {
-        this.enderecoIP = InetAddress.getByName(pm.getAddress());
-        this.port = pm.getPort();
+        enderecoIP = InetAddress.getByName(pm.getAddress());
+        port = pm.getPort();
         socketCliente = new DatagramSocket();
         tecladoUsuario = new BufferedReader(new InputStreamReader(System.in));
     }
