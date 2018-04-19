@@ -19,7 +19,7 @@ public class Server {
     private static byte[] sendData = new byte[1400];
 
     private static final Map<BigInteger, String> map = new HashMap();
-    private static final Queue<DatagramPacket> mensagens = new LinkedList<>();
+    private static final Queue<DatagramPacket> comandosRecebidos = new LinkedList<>();
     private static final Queue<DatagramPacket> disco = new LinkedList<>();
     private static final Queue<DatagramPacket> processamento = new LinkedList<>();
 
@@ -36,17 +36,13 @@ public class Server {
                 while (true) {
                     try {
                         DatagramPacket pacoteRecebido = pacoteRecebido();
+                        comandosRecebidos.offer(pacoteRecebido);
 
-                        String texto = new String(receiveData,0,pacoteRecebido.getLength());
+                        String texto = new String(receiveData, 0, pacoteRecebido.getLength());
                         sendData = texto.toUpperCase().getBytes();
                         System.out.println("Mensagem Recebida: " + texto);
 
-                        // Pegando ip e porta do cliente que enviou o zdatagram
-                        IPAddress = pacoteRecebido.getAddress();
-                        port = pacoteRecebido.getPort();
-                        
-                        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                        socketServidor.send(envioPacote);
+                        enviarPacote(pacoteRecebido, texto);
 
                         // Thread.sleep(300);
                     } catch (IOException e) {
@@ -60,31 +56,26 @@ public class Server {
 
         });
 
-       /* //Thread que vai consumir do fila e responder para cliente;
+        /*//Thread que vai consumir do fila e responder para cliente;
         Thread consumeThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 while (true) {
 
-                    try {
-
-                        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-                        socketServidor.send(envioPacote);
-                        //Thread.sleep(800);
-                        //} catch (InterruptedException ex) {
-                        //  break;
-                    } catch (IOException ex) {
-                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    processamentoComandos();
+                    
+                    //Thread.sleep(800);
+                    //} catch (InterruptedException ex) {
+                    //  break;
                 }
 
             }
         });*/
         receiveThread.start();
-     //   consumeThread.start();
         receiveThread.join();
-      //  consumeThread.join();
+        //consumeThread.start();
+       // consumeThread.join();
 
     }
 
@@ -96,5 +87,18 @@ public class Server {
         return pacoteRecebido;
     }
 
-    // static void enviarPacote()
+    static void enviarPacote(DatagramPacket pacoteRecebido, String texto) throws IOException {
+        // Pegando ip e porta do cliente que enviou o zdatagram
+        IPAddress = pacoteRecebido.getAddress();
+        port = pacoteRecebido.getPort();
+
+        sendData = texto.getBytes();
+        DatagramPacket envioPacote = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+        socketServidor.send(envioPacote);
+
+    }
+    
+    static void processamentoComandos(){
+        
+    }
 }
