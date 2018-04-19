@@ -15,8 +15,8 @@ public class Client implements Runnable {
     private BufferedReader tecladoUsuario;
     private DatagramSocket socketCliente;
 
-    private byte[] outData;
-    private byte[] inData;
+    private byte[] sendData;
+    private byte[] receiveData;
 
     PropertyManagement pm = new PropertyManagement();
 
@@ -31,7 +31,8 @@ public class Client implements Runnable {
         new Thread(new Client()).start();
 
     }
-
+    
+    
     @Override
     public void run() {
 
@@ -39,19 +40,19 @@ public class Client implements Runnable {
 
         while (true) {
             try {
-                inData = new byte[1400];
-                outData = new byte[1400];
+                receiveData = new byte[1400];
+                sendData = new byte[1400];
 
                 System.out.print("> ");
                 String sentence = tecladoUsuario.readLine();
-                outData = sentence.getBytes(); // Pegando tamanho da String
+                sendData = sentence.getBytes(); // Pegando tamanho da String
                 
                 //Enviando o pacote de datagrama para o servidor
-                DatagramPacket outDatagram = new DatagramPacket(outData, outData.length, this.enderecoIP, this.port);
+                DatagramPacket outDatagram = new DatagramPacket(sendData, sendData.length, this.enderecoIP, this.port);
                 socketCliente.send(outDatagram);
 
                 //recebendo o pacote datagrama do servidor
-                DatagramPacket inDatagram = new DatagramPacket(inData, inData.length);
+                DatagramPacket inDatagram = new DatagramPacket(receiveData, receiveData.length);
                 socketCliente.receive(inDatagram);
 
                 //imprimindo mensagem recebida do servidor;

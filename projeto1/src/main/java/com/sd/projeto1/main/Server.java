@@ -10,41 +10,42 @@ public class Server implements Runnable {
 
     private DatagramSocket socketServidor;
 
-    private byte[] inData;
-    private byte[] outData;
+    private byte[] receiveData;
+    private byte[] sendData;
 
     PropertyManagement pm = new PropertyManagement();
+
+    public static void main(String[] args) throws SocketException {
+        System.out.println("Servidor Iniciado...");
+        new Thread(new Server()).start();
+    }
 
     @Override
     public void run() {
         while (true) {
             try {
-                inData = new byte[1400];
-                outData = new byte[1400];
+                receiveData = new byte[1400];
+                sendData = new byte[1400];
 
                 // recebendo datagrama do cliente
-                DatagramPacket receivedPacket = new DatagramPacket(inData, inData.length);
+                DatagramPacket receivedPacket = new DatagramPacket(receiveData, receiveData.length);
                 socketServidor.receive(receivedPacket);
 
                 String text = new String(receivedPacket.getData());
-                outData = text.toUpperCase().getBytes();
+                sendData = text.toUpperCase().getBytes();
                 System.out.println("Mensagem Recebida: " + text);
 
                 // Pegando ip e porta do cliente que enviou o datagram
                 InetAddress IPAddress = receivedPacket.getAddress();
                 int port = receivedPacket.getPort();
 
-                DatagramPacket sendPacket = new DatagramPacket(inData, inData.length, IPAddress, port);
+                DatagramPacket sendPacket = new DatagramPacket(receiveData, receiveData.length, IPAddress, port);
                 socketServidor.send(sendPacket);
             } catch (IOException e) {
                 System.out.println("Excessão causada: " + e.getLocalizedMessage());
             }
 
         }
-    }
-    public static void main(String[] args) throws SocketException{
-            System.out.println("Servidor Iniciado...");
-            new Thread(new Server()).start();
     }
 
 }
