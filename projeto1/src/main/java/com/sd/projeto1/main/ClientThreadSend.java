@@ -39,6 +39,7 @@ public class ClientThreadSend extends Thread {
 
     @Override
     public void run() {
+    
         try {
             sendSocketClient = new DatagramSocket();
         } catch (SocketException se) {
@@ -46,6 +47,7 @@ public class ClientThreadSend extends Thread {
         }
         this.sendData = new byte[1400];
         this.receiveData = new byte[1400];
+
         System.out.println("Cliente Iniciado, esperando por comando:");
         while (true) {
             try {
@@ -54,7 +56,6 @@ public class ClientThreadSend extends Thread {
                 //System.out.println(this.port);
                 // System.out.println(ip);
                 keyboardUser = new BufferedReader(new InputStreamReader(System.in));
-                
 
                 System.out.print(">");
                 String setence = keyboardUser.readLine();

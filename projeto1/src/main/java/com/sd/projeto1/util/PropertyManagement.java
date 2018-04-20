@@ -69,7 +69,12 @@ public class PropertyManagement {
     }
 
     public int getPort() {
-        return Integer.parseInt(prop.getProperty("port", "13267"));
+        return Integer.parseInt(prop.getProperty("port", ""));
+         // return Integer.parseInt(prop.getProperty("port", "13267"));
+    }
+    
+    public int getPortTwo() {
+        return Integer.parseInt(prop.getProperty("port2", ""));
          // return Integer.parseInt(prop.getProperty("port", "13267"));
     }
     

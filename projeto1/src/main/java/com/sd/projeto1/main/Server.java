@@ -9,6 +9,7 @@ public class Server {
     public static void main(String[] args) {
         
         ServerThreadReceive threadReceive = new ServerThreadReceive();
+        ServerThreadSend threadSend = new ServerThreadSend();
         
     }
 }

@@ -35,6 +35,7 @@ public class ServerThreadReceive extends Thread {
 
     @Override
     public void run() {
+        MultiQueue fila = new MultiQueue();
         this.sendData = new byte[1400];
         this.receiveData = new byte[1400];
         try {
@@ -42,6 +43,7 @@ public class ServerThreadReceive extends Thread {
         } catch (SocketException se) {
             se.printStackTrace();
         }
+     
         System.out.println("Servidor Iniciado...");
         while (true) {
             try {
@@ -53,6 +55,10 @@ public class ServerThreadReceive extends Thread {
 
                 //sendData = textReceive.toUpperCase().getBytes();
                 System.out.println("Mensagem Recebida: " + textReceive);
+                
+               
+                fila.push(receivePacket);
+              
 
             } catch (IOException io) {
                 io.printStackTrace();
