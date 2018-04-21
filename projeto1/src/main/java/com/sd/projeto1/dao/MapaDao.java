@@ -49,7 +49,7 @@ public class MapaDao implements Serializable{
         }	
     }
     
-    public int salvar(Mapa mapa) throws Exception {
+    public Mapa salvar(Mapa mapa) throws Exception {
         Connection con = null;
         PreparedStatement ps = null;
 
@@ -61,9 +61,17 @@ public class MapaDao implements Serializable{
                                             + "VALUES (?, ?, datetime('now', 'localtime'))");
             ps.setString(1, mapa.getTexto());
             ps.setInt(2, mapa.getTipoOperacaoId());
-
-            return ps.executeUpdate();
-          
+            
+            if(ps.executeUpdate() == 0)
+                return null;
+            
+            ResultSet rs = ps.getGeneratedKeys();
+            mapa.setChave(rs.getInt(1));
+           
+            Mapa m = buscarPorId(mapa.getChave());
+                
+            return m;
+            
         } catch (SQLException e) {
                 throw new Exception("Erro ao inserir mapa. " + e.getMessage());
         }finally{
@@ -72,21 +80,27 @@ public class MapaDao implements Serializable{
 
     }
     
-    public int editar(Mapa mapa) throws Exception {
+    public Mapa editar(Mapa mapa) throws Exception {
         Connection con = null;
         PreparedStatement ps = null;
         
         try {
             
             if(mapa.getChave() <=0)
-                return 0;
+                return null;
             
                 con = SQLiteConnection.connect();
-                ps = con.prepareStatement("update mapa set texto = ? where chave = ?");
+                ps = con.prepareStatement("update mapa set texto = ?, tipo = ?, data = datetime('now', 'localtime') where chave = ?");
                 ps.setString(1, mapa.getTexto());
-                ps.setInt(2, mapa.getChave());
-
-                return ps.executeUpdate();
+                ps.setInt(2, mapa.getTipoOperacaoId());
+                ps.setInt(3, mapa.getChave());
+                    
+                if(ps.executeUpdate() == 0)
+                    return null;
+                
+                Mapa m = buscarPorId(mapa.getChave());
+                
+                return m;
 
         } catch (SQLException e) {
                 throw new Exception("Erro ao atualizar mapa. " + e.getMessage());

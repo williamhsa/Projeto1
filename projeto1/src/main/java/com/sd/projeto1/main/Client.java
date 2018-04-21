@@ -1,89 +1,174 @@
-<<<<<<< HEAD
 package com.sd.projeto1.main;
 
+import com.sd.projeto1.dao.MapaDao;
+import com.sd.projeto1.model.Mapa;
 import com.sd.projeto1.util.PropertyManagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
-public class Client implements Runnable{
-    
-	private BufferedReader tecladoUsuario;
-	private DatagramSocket socketCliente;
-	private InetAddress enderecoIP;
-        
-        PropertyManagement pm = new PropertyManagement();
-	
-	private byte[] outData;
-        private byte[] inData;
-
-	public Client() throws SocketException, UnknownHostException{
-		socketCliente = new DatagramSocket();
-		enderecoIP = InetAddress.getByName(pm.getAddress());
-		tecladoUsuario = new BufferedReader(new InputStreamReader(System.in));
-	}
-	
-	private void shutdown(){
-		socketCliente.close();
-	}
-	
-	public void run() {
-	    
-            System.out.println("Cliente Iniciado, esperando por mensagem:");
-		
-            while(true){
-            try {
-                    inData = new byte[1400];
-                    outData = new byte[1400];
-                   
-                    System.out.print("> ");
-                    String sentence = tecladoUsuario.readLine();
-                    outData = sentence.getBytes();
-
-                    DatagramPacket out = new DatagramPacket(outData, outData.length, enderecoIP, pm.getPort());
-                    socketCliente.send(out);
-
-                    DatagramPacket in = new DatagramPacket(inData, inData.length);
-                    socketCliente.receive(in);
-
-                    String modifiedSentence = new String(in.getData());
-                    System.out.println("Servidor >" + modifiedSentence);
-
-            } catch (IOException e) {
-                System.out.println("Excessão causada: " + e.getLocalizedMessage());
-            }
-        }
-    }
-       
-    public static void main(String[] args) throws SocketException, UnknownHostException{
-
-            new Thread(new Client()).start();
-    }
-	
-}
-=======
-package com.sd.projeto1.main;
-
-import com.sd.projeto1.dao.MapaDao;
-import com.sd.projeto1.model.Mapa;
-
-import java.net.*;
-import java.io.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.SerializationUtils;
 
-public class Client {
+public class Client implements Runnable{
+        private static Queue<DatagramPacket> comandos = new LinkedList<>();
+	private static DatagramSocket socketCliente;
+	private static InetAddress enderecoIP;
+        
+        
+        static PropertyManagement pm = new PropertyManagement();
+	
+        public static void main(String[] args) throws SocketException, UnknownHostException{
+            
+            socketCliente = new DatagramSocket();
+            enderecoIP = InetAddress.getByName(pm.getAddress());
+            byte[] receiveData = new byte[1400];
+            
+            ExecutorService executor = Executors.newCachedThreadPool();
+            
+            Thread receive = new Thread(new Runnable(){
+                @Override
+                public void run() {
+                    try {
+                        while(true){
+                            DatagramPacket pacoteRecebido = new DatagramPacket(receiveData, receiveData.length);
+                            socketCliente.receive(pacoteRecebido);
+                            String msg = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
+                            System.out.println(msg);
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            
+            });
+            
+            Thread send = new Thread(new Runnable(){
+                @Override
+                public void run() {
+                    try {
+                        while(true){
+                          menu();
+                          Thread.sleep(2000);
+                        }
+                       
+                    } catch (IOException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            
+            });
+            
+            executor.execute(receive);
+            executor.execute(send);
+            
+            executor.shutdown();
+        }
+	
+        public static DatagramPacket send(byte[] outData) throws IOException{
+            
+            DatagramPacket sendPacket = new DatagramPacket(outData, outData.length, enderecoIP, pm.getPort());
+            socketCliente.send(sendPacket);
+            
+            return sendPacket; 
+        }
+       
+        public static DatagramPacket receive(byte[] inData) throws IOException{
+       
+         DatagramPacket in = new DatagramPacket(inData, inData.length);
+         socketCliente.receive(in);
+         
+         return in;
+        }
+    
+	
+	public static void menu() throws Exception{
+          
+            int opcao = 0, chave;
+            String msg;
+            BufferedReader mensagem;
+            Mapa mapa;
+            mensagem = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args)  {
+            Scanner scanner = new Scanner(System.in);
 
-       ClientThreadSend threadSend = new ClientThreadSend();
-       ClientThreadReceive threadReceive = new ClientThreadReceive();
+            System.out.println("\n===============================");
+            System.out.println("Digite a operação: ");
+            System.out.println("1 - Inserir");
+            System.out.println("2 - Atualizar");
+            System.out.println("3 - Excluir");
+            System.out.println("4 - Buscar");
+            System.out.println("Opção:");
+
+            opcao = scanner.nextInt();
+
+            switch(opcao){
+                case 1:
+
+                System.out.println("Digite a Mensagem:");
+                msg = mensagem.readLine();
+
+                mapa = new Mapa();
+
+                mapa.setTipoOperacaoId(1);
+                mapa.setTexto(msg);
+
+               
+                byte[] object = SerializationUtils.serialize(mapa);
+
+                if(object.length > 1400)
+                    System.out.println("Pacote maior que o suportado!");
+                else
+                    send(object);
+                
+                break;
+                case 2:
+                    System.out.println("Digite a chave da mensagem que deseja atualizar:");
+                    chave = scanner.nextInt();
+
+                    System.out.println("Digite a Mensagem:");
+                    msg = mensagem.readLine();
+
+                    mapa = new Mapa();
+                    mapa.setChave(chave);
+                    mapa.setTipoOperacaoId(2);
+                    mapa.setTexto(msg);
+
+                    
+                    byte[] objectUpdate = SerializationUtils.serialize(mapa);
+
+                    if(objectUpdate.length > 1400)
+                        System.out.println("Pacote maior que o suportado!");
+                    else
+                        send(objectUpdate);
+                    
+                    break;
+    //            case 3:
+    //                break;
+    //            case 4:
+    //                break;
+            default:
+                System.out.println("Opção Inválida");
+                break;
+            }       
+        }  
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }
->>>>>>> f0a831da465b2aad2f524172b76353c3e7315552

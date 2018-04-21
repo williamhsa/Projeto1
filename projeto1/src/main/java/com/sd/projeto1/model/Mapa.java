@@ -1,9 +1,10 @@
 package com.sd.projeto1.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
-public class Mapa {
+public class Mapa implements Serializable{
  
     private int chave;
     private String texto;
