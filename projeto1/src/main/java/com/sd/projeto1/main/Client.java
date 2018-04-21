@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.sd.projeto1.main;
 
 import com.sd.projeto1.util.PropertyManagement;
@@ -65,3 +66,24 @@ public class Client implements Runnable{
     }
 	
 }
+=======
+package com.sd.projeto1.main;
+
+import com.sd.projeto1.dao.MapaDao;
+import com.sd.projeto1.model.Mapa;
+
+import java.net.*;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class Client {
+
+    public static void main(String[] args)  {
+
+       ClientThreadSend threadSend = new ClientThreadSend();
+       ClientThreadReceive threadReceive = new ClientThreadReceive();
+    }
+
+}
+>>>>>>> f0a831da465b2aad2f524172b76353c3e7315552

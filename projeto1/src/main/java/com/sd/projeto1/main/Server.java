@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.sd.projeto1.main;
 
 import com.sd.projeto1.dao.MapaDao;
@@ -158,3 +159,20 @@ public class Server implements Runnable{
             new Thread(new Server()).start();
     }	
 }
+=======
+package com.sd.projeto1.main;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class Server {
+
+    public static void main(String[] args) {
+        
+        ServerThreadReceive threadReceive = new ServerThreadReceive();
+        ServerThreadSend threadSend = new ServerThreadSend();
+        
+    }
+}
+>>>>>>> f0a831da465b2aad2f524172b76353c3e7315552
