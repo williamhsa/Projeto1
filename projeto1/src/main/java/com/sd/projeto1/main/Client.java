@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.SerializationUtils;
 
-public class Client implements Runnable{
+public class Client{
         private static Queue<DatagramPacket> comandos = new LinkedList<>();
 	private static DatagramSocket socketCliente;
 	private static InetAddress enderecoIP;
@@ -166,9 +166,4 @@ public class Client implements Runnable{
                 break;
             }       
         }  
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
