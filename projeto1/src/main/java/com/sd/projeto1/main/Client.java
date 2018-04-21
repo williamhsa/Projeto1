@@ -1,41 +1,37 @@
 package com.sd.projeto1.main;
 
-import com.sd.projeto1.dao.MapaDao;
-import com.sd.projeto1.model.Mapa;
 import com.sd.projeto1.util.PropertyManagement;
-import com.sd.projeto1.util.Utilidades;
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.util.Map.Entry;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class Client implements Runnable{
+    
+	private BufferedReader tecladoUsuario;
+	private DatagramSocket socketCliente;
+	private InetAddress enderecoIP;
+        
+        PropertyManagement pm = new PropertyManagement();
+	
+	private byte[] outData;
+        private byte[] inData;
 
-    private InetAddress enderecoIP;
-    private int port; //porta UDP
-    private BufferedReader tecladoUsuario;
-    private DatagramSocket socketCliente;
-    
-    private byte[] outData;
-    private byte[] inData;
-    
-    PropertyManagement pm = new PropertyManagement();
-    
-    Client() throws SocketException, UnknownHostException{
-        this.enderecoIP = InetAddress.getByName(pm.getAddress());
-        this.port = pm.getPort();
-        socketCliente = new DatagramSocket();
-        tecladoUsuario = new BufferedReader(new InputStreamReader(System.in));
-    }
-    
-    
-
-    public static void main(String[] args) throws IOException, Exception {
-        new Thread(new Client()).start();
-      
-    }
-    
-    public void run() {
+	public Client() throws SocketException, UnknownHostException{
+		socketCliente = new DatagramSocket();
+		enderecoIP = InetAddress.getByName(pm.getAddress());
+		tecladoUsuario = new BufferedReader(new InputStreamReader(System.in));
+	}
+	
+	private void shutdown(){
+		socketCliente.close();
+	}
+	
+	public void run() {
 	    
             System.out.println("Cliente Iniciado, esperando por mensagem:");
 		
@@ -48,7 +44,7 @@ public class Client implements Runnable{
                     String sentence = tecladoUsuario.readLine();
                     outData = sentence.getBytes();
 
-                    DatagramPacket out = new DatagramPacket(outData, outData.length, this.enderecoIP, this.port);
+                    DatagramPacket out = new DatagramPacket(outData, outData.length, enderecoIP, pm.getPort());
                     socketCliente.send(out);
 
                     DatagramPacket in = new DatagramPacket(inData, inData.length);
@@ -62,9 +58,10 @@ public class Client implements Runnable{
             }
         }
     }
-    
-    private void shutdown(){
-		socketCliente.close();
-    }
+       
+    public static void main(String[] args) throws SocketException, UnknownHostException{
 
+            new Thread(new Client()).start();
+    }
+	
 }
