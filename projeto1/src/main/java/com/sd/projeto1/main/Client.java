@@ -1,13 +1,11 @@
 package com.sd.projeto1.main;
 
-import com.sd.projeto1.dao.MapaDao;
 import com.sd.projeto1.model.Mapa;
+import com.sd.projeto1.model.MapaDTO;
 import com.sd.projeto1.util.PropertyManagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -45,8 +43,19 @@ public class Client{
                         while(true){
                             DatagramPacket pacoteRecebido = new DatagramPacket(receiveData, receiveData.length);
                             socketCliente.receive(pacoteRecebido);
-                            String msg = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
-                            System.out.println(msg);
+                            //String msg = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
+                            MapaDTO maparetorno = (MapaDTO) SerializationUtils.deserialize(pacoteRecebido.getData());
+                            
+                            if(maparetorno == null)
+                                System.out.println(maparetorno.getMensagem());
+                            else{
+                                if(maparetorno.getMapa().getTipoOperacaoId() == 4)
+                                    objetoRetornado(maparetorno);
+                                else
+                                   System.out.println(maparetorno.getMensagem()); 
+                            }
+                                
+                            
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -127,7 +136,6 @@ public class Client{
                 mapa.setTipoOperacaoId(1);
                 mapa.setTexto(msg);
 
-               
                 byte[] object = SerializationUtils.serialize(mapa);
 
                 if(object.length > 1400)
@@ -148,7 +156,6 @@ public class Client{
                     mapa.setTipoOperacaoId(2);
                     mapa.setTexto(msg);
 
-                    
                     byte[] objectUpdate = SerializationUtils.serialize(mapa);
 
                     if(objectUpdate.length > 1400)
@@ -157,13 +164,48 @@ public class Client{
                         send(objectUpdate);
                     
                     break;
-    //            case 3:
-    //                break;
-    //            case 4:
-    //                break;
+                case 3:
+                    System.out.println("Digite a chave da mensagem que deseja excluir:");
+                    chave = scanner.nextInt();
+
+                    mapa = new Mapa();
+                    mapa.setChave(chave);
+                    mapa.setTipoOperacaoId(3);
+                   
+                    byte[] objectDelete = SerializationUtils.serialize(mapa);
+
+                    if(objectDelete.length > 1400)
+                        System.out.println("Pacote maior que o suportado!");
+                    else
+                        send(objectDelete);
+                    
+                    break;
+                case 4:
+                    System.out.println("Digite a chave da mensagem que deseja buscar:");
+                    chave = scanner.nextInt();
+
+                    mapa = new Mapa();
+                    mapa.setChave(chave);
+                    mapa.setTipoOperacaoId(4);
+                   
+                    byte[] objectSearch = SerializationUtils.serialize(mapa);
+
+                    if(objectSearch.length > 1400)
+                        System.out.println("Pacote maior que o suportado!");
+                    else
+                        send(objectSearch);
+                    
+                    break;
             default:
                 System.out.println("Opção Inválida");
                 break;
             }       
-        }  
+        }
+        
+        
+        public static void objetoRetornado(MapaDTO mapa){
+            System.out.println("Chave: " + mapa.getMapa().getChave());
+            System.out.println("Texto: " + mapa.getMapa().getTexto());
+            System.out.println("Data: " + mapa.getMapa().getData());
+        }
 }

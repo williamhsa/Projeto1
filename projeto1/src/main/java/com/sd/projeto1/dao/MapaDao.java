@@ -109,7 +109,7 @@ public class MapaDao implements Serializable{
         }
     }
     
-    public int excluir(int id) throws Exception {
+    public Mapa excluir(int id) throws Exception {
         Connection con = null;
         PreparedStatement ps = null;
 
@@ -117,8 +117,13 @@ public class MapaDao implements Serializable{
                 con = SQLiteConnection.connect();
                 ps = con.prepareStatement("delete from mapa where chave = ?");
                 ps.setInt(1, id);
-
-                return ps.executeUpdate();
+                
+                Mapa m = buscarPorId(id);
+                
+                if(ps.executeUpdate() > 0)
+                    return m;
+                else
+                    return null;
           
         } catch (SQLException e) {
                 throw new Exception("Erro ao excluir mapa. " + e.getMessage());
