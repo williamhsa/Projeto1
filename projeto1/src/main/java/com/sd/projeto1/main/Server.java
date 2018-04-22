@@ -4,7 +4,7 @@ public class Server{
     
     public static void main(String[] args) {
         System.out.println("Servidor Iniciado...");
-        new Thread(new ServerReceiveThread()).start();
+        new Thread(new ServerThreadOne()).start();
     }
    
 }
