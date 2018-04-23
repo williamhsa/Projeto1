@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.sd.projeto1.main;
 
 import com.sd.projeto1.dao.MapaDao;
@@ -9,7 +14,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -20,9 +24,9 @@ import org.apache.commons.lang3.SerializationUtils;
 
 /**
  *
- * @author Willian
+ * @author willi
  */
-public class ServerThreadTwo implements Runnable {
+public class ServerThreadDisco implements Runnable {
 
     private static Map<BigInteger, String> mapa = new HashMap();
     private DatagramSocket socketServidor;
@@ -32,7 +36,7 @@ public class ServerThreadTwo implements Runnable {
     private ExecutorService executor;
 
     /// Recebendo o pacote da Thread Anterior;
-    ServerThreadTwo(DatagramSocket socketServido) {
+    ServerThreadDisco(DatagramSocket socketServidor) {
         this.socketServidor = socketServidor;
     }
 
@@ -45,25 +49,22 @@ public class ServerThreadTwo implements Runnable {
 
             while (true) {
                 in = new byte[1400];
-                DatagramPacket receivedPacket = MultiQueue.getComandoFila();
+                DatagramPacket receivedPacket = MultiQueue.getDiscoFila();
+                if(receivedPacket != null){
+                    
+                    Mapa maparetorno = new Mapa();
+                    maparetorno = (Mapa) SerializationUtils.deserialize(receivedPacket.getData());
 
-                MultiQueue.setDiscoFila(receivedPacket);
-                MultiQueue.setProcessamentoFila(receivedPacket);
+                    MapaDTO mapaDisco = new MapaDTO();
+                    mapaDisco = tipoOperacao(maparetorno);
 
-                Mapa maparetorno = new Mapa();
-                maparetorno = (Mapa) SerializationUtils.deserialize(receivedPacket.getData());
+                    ServerThreadSend serverSend = new ServerThreadSend(mapaDisco, socketServidor);
 
-                MapaDTO mapaDTO = new MapaDTO();
-                mapaDTO = tipoOperacao(maparetorno);
-
-             
-
-                ServerThreadThree serverSend = new ServerThreadThree( socketServidor);
-
-                if (serverSend != null) {
-                    executor.execute(serverSend);
+                    if (serverSend != null) {
+                        executor.execute(serverSend);
+                    }
                 }
-
+                
             }
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -71,16 +72,7 @@ public class ServerThreadTwo implements Runnable {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, e);
         }
     }
-
-    /*
-    public static DatagramPacket receive() throws IOException {
-
-        DatagramPacket receivePacket = new DatagramPacket(in, in.length);
-        socketServidor.receive(receivePacket);
-
-        return receivePacket;
-    }*/
-
+    
     public static void salvar(Mapa mapa1) {
         BigInteger chave = new BigInteger(String.valueOf(mapa1.getChave()));
 
@@ -129,8 +121,9 @@ public class ServerThreadTwo implements Runnable {
         switch (mapaEntity.getTipoOperacaoId()) {
             case 1:
                 Mapa mi = mapaDAO.salvar(mapaEntity);
-                mapaDTO.setMapa(mi);
+                
                 if (mi != null) {
+                    mapaDTO.setMapa(mi);
                     salvar(mi);
                     imprimeCRUD(mi);
                     mapaDTO.setMensagem("Inserido com Sucesso!");
@@ -141,8 +134,9 @@ public class ServerThreadTwo implements Runnable {
                 break;
             case 2:
                 Mapa ma = mapaDAO.editar(mapaEntity);
-                mapaDTO.setMapa(ma);
+                
                 if (ma != null) {
+                    mapaDTO.setMapa(ma);
                     editar(ma);
                     imprimeCRUD(ma);
                     mapaDTO.setMensagem("Atualizado com Sucesso!");
@@ -153,9 +147,10 @@ public class ServerThreadTwo implements Runnable {
                 break;
             case 3:
                 Mapa me = mapaDAO.excluir(mapaEntity.getChave());
-                me.setTipoOperacaoId(3);
-                mapaDTO.setMapa(me);
+                
                 if (me != null) {
+                    me.setTipoOperacaoId(3);
+                    mapaDTO.setMapa(me);
                     excluir(me);
                     imprimeCRUD(me);
                     mapaDTO.setMensagem("Excluido com Sucesso!");
@@ -166,9 +161,10 @@ public class ServerThreadTwo implements Runnable {
                 break;
             case 4:
                 Mapa mb = mapaDAO.buscarPorId(mapaEntity.getChave());
-                mb.setTipoOperacaoId(4);
-                mapaDTO.setMapa(mb);
-                if (mb != null) {
+                
+                if (mb.getChave() != 0) {
+                    mb.setTipoOperacaoId(4);
+                    mapaDTO.setMapa(mb);
                     //buscar(ma.getChave());
                     imprimeCRUD(mb);
                     mapaDTO.setMensagem("Recuperado com Sucesso!");
