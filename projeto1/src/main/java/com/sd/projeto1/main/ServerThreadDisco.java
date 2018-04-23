@@ -28,7 +28,7 @@ import org.apache.commons.lang3.SerializationUtils;
  */
 public class ServerThreadDisco implements Runnable {
 
-    private static Map<BigInteger, String> mapa = new HashMap();
+    public static Map<BigInteger, String> mapa = new HashMap();
     private DatagramSocket socketServidor;
     private static PropertyManagement pm;
     private static byte[] in;

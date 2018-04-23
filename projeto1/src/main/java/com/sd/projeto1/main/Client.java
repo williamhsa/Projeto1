@@ -206,8 +206,10 @@ public class Client {
     }
 
     public static void objetoRetornado(MapaDTO mapa) {
+        System.out.println("\n================================");
         System.out.println("Chave: " + mapa.getMapa().getChave());
         System.out.println("Texto: " + mapa.getMapa().getTexto());
-        System.out.println("Data: " + mapa.getMapa().getData());
     }
+    
+    
 }
