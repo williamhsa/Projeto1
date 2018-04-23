@@ -56,10 +56,9 @@ public class ServerThreadTwo implements Runnable {
                 MapaDTO mapaDTO = new MapaDTO();
                 mapaDTO = tipoOperacao(maparetorno);
 
-                System.out.println("Print que queria");
-                System.out.println(maparetorno.getTexto());
+             
 
-                ServerThreadThree serverSend = new ServerThreadThree(mapaDTO, socketServidor);
+                ServerThreadThree serverSend = new ServerThreadThree( socketServidor);
 
                 if (serverSend != null) {
                     executor.execute(serverSend);
